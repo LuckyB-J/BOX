@@ -1,0 +1,147 @@
+import pygame
+import random
+import math
+
+# 初始化pygame
+pygame.init()
+
+# 设置窗口
+width, height = 800, 600
+screen = pygame.display.set_mode((width, height))
+pygame.display.set_caption('圣诞星树')
+
+# 颜色定义
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
+BLUE = (0, 191, 255)
+PINK = (255, 192, 203)
+YELLOW = (255, 255, 0)
+
+# 生成星星
+stars = []
+for _ in range(200):
+    x = random.randrange(0, width)
+    y = random.randrange(0, height)
+    stars.append([x, y])
+
+# 粒子类
+class Star:
+    def __init__(self, x, y, color, size):
+        self.x = x
+        self.y = y
+        self.color = color
+        self.size = size
+        self.sx = random.uniform(-1, 1)
+        self.sy = random.uniform(-1, 1)
+        self.size = random.uniform(0.5, 2)
+    
+    def update(self):
+        self.x += self.sx
+        self.y += self.sy
+        self.size *= 0.96
+        if self.size <= 0.1:
+            self.x = random.randrange(0, width)
+            self.y = random.randrange(0, height)
+            self.size = random.uniform(0.5, 2)
+            self.sx = random.uniform(-1, 1)
+            self.sy = random.uniform(-1, 1)
+    
+    def draw(self, screen):
+        pygame.draw.circle(screen, self.color, (int(self.x), int(self.y)), int(self.size))
+
+# 生成粒子
+particles = []
+for _ in range(50):
+    x = random.randrange(0, width)
+    y = random.randrange(0, height)
+    particles.append(Star(x, y, WHITE, random.uniform(0.5, 2)))
+
+# 圣诞树参数
+tree_center_x = width // 2
+tree_center_y = height // 2 + 100
+tree_height = 300
+tree_width = 200
+
+# 文字
+font = pygame.font.SysFont('SimHei', 30)
+text = font.render('Merry Christmas', True, WHITE)
+text_rect = text.get_rect()
+text_rect.center = (width // 2, 100)
+
+# 时钟
+clock = pygame.time.Clock()
+running = True
+
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+
+    screen.fill(BLACK)
+
+    # 绘制星星
+    for star in stars:
+        star[0] += random.uniform(-0.5, 0.5)
+        star[1] += random.uniform(-0.5, 0.5)
+        if star[0] < 0 or star[0] > width or star[1] < 0 or star[1] > height:
+            star[0] = random.randrange(0, width)
+            star[1] = random.randrange(0, height)
+        pygame.draw.circle(screen, WHITE, (int(star[0]), int(star[1])), 1)
+
+    # 绘制粒子
+    for p in particles:
+        p.update()
+        p.draw(screen)
+
+    # 绘制圣诞树
+    layers = 5
+    layer_height = tree_height / layers
+    for i in range(layers):
+        layer_y = tree_center_y - tree_height + i * layer_height
+        layer_width = tree_width - (i * tree_width / layers)
+        layer_center_x = tree_center_x
+        # 蓝色树
+        pygame.draw.polygon(screen, BLUE, [
+            (layer_center_x - layer_width/2, layer_y + layer_height),
+            (layer_center_x, layer_y),
+            (layer_center_x + layer_width/2, layer_y + layer_height)
+        ])
+        # 粉色树
+        pygame.draw.polygon(screen, PINK, [
+            (width - layer_center_x - layer_width/2, layer_y + layer_height),
+            (width - layer_center_x, layer_y),
+            (width - layer_center_x + layer_width/2, layer_y + layer_height)
+        ])
+        # 装饰
+        for _ in range(5):
+            rx = random.randrange(int(layer_center_x - layer_width*0.8), int(layer_center_x + layer_width*0.8))
+            ry = random.randrange(int(layer_y), int(layer_y + layer_height*0.8))
+            r_size = random.randint(2, 4)
+            pygame.draw.circle(screen, YELLOW, (rx, ry), r_size)
+            rx = random.randrange(int(width - layer_center_x - layer_width*0.8), int(width - layer_center_x + layer_width*0.8))
+            pygame.draw.circle(screen, YELLOW, (rx, ry), r_size)
+
+    # 绘制树干
+    trunk_width = 20
+    trunk_height = 50
+    pygame.draw.rect(screen, (139, 69, 19), (tree_center_x - trunk_width//2, tree_center_y, trunk_width, trunk_height))
+    pygame.draw.rect(screen, (139, 69, 19), (width - tree_center_x - trunk_width//2, tree_center_y, trunk_width, trunk_height))
+
+    # 绘制月亮和爱心
+    pygame.draw.circle(screen, WHITE, (100, 80), 30)
+    pygame.draw.circle(screen, WHITE, (100, 80), 25, 0)
+    pygame.draw.circle(screen, PINK, (width - 100, 80), 30)
+    # 爱心
+    pygame.draw.polygon(screen, PINK, [
+        (width - 100, 80),
+        (width - 85, 60),
+        (width - 70, 80)
+    ])
+
+    # 绘制文字
+    screen.blit(text, text_rect)
+
+    pygame.display.flip()
+    clock.tick(60)
+
+pygame.quit()
