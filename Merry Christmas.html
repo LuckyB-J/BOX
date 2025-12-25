@@ -1,12 +1,25 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>圣诞树网页版</title>
+    <!-- 引入PyScript资源 -->
+    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+</head>
+<body>
+    <!-- 这里是Python代码的运行区域 -->
+    <py-script>
 import pygame
 import random
 import math
 
-# 初始化pygame
+# 初始化pygame（PyScript中需调整显示模式）
 pygame.init()
 
-# 设置窗口
-width, height = 800, 600
+# 设置窗口（适配手机，可调整宽高）
+width, height = 375, 667  # 适配多数手机的宽高，可根据需要修改
 screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption('圣诞星树')
 
@@ -63,10 +76,10 @@ tree_height = 300
 tree_width = 200
 
 # 文字
-font = pygame.font.SysFont('SimHei', 30)
+font = pygame.font.SysFont('SimHei', 20)  # 调整字体大小适配手机
 text = font.render('Merry Christmas', True, WHITE)
 text_rect = text.get_rect()
-text_rect.center = (width // 2, 100)
+text_rect.center = (width // 2, 80)  # 调整文字位置
 
 # 时钟
 clock = pygame.time.Clock()
@@ -128,14 +141,14 @@ while running:
     pygame.draw.rect(screen, (139, 69, 19), (width - tree_center_x - trunk_width//2, tree_center_y, trunk_width, trunk_height))
 
     # 绘制月亮和爱心
-    pygame.draw.circle(screen, WHITE, (100, 80), 30)
-    pygame.draw.circle(screen, WHITE, (100, 80), 25, 0)
-    pygame.draw.circle(screen, PINK, (width - 100, 80), 30)
+    pygame.draw.circle(screen, WHITE, (80, 60), 25)
+    pygame.draw.circle(screen, WHITE, (80, 60), 20, 0)
+    pygame.draw.circle(screen, PINK, (width - 80, 60), 25)
     # 爱心
     pygame.draw.polygon(screen, PINK, [
-        (width - 100, 80),
-        (width - 85, 60),
-        (width - 70, 80)
+        (width - 80, 60),
+        (width - 65, 40),
+        (width - 50, 60)
     ])
 
     # 绘制文字
@@ -145,3 +158,6 @@ while running:
     clock.tick(60)
 
 pygame.quit()
+    </py-script>
+</body>
+</html>
